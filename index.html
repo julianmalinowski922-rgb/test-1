@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate Spaß Website</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:linear-gradient(45deg,#ff0080,#7928ca,#2afadf);
+    background-size:400% 400%;
+    animation:bgMove 10s infinite alternate;
+    min-height:100vh;
+    color:white;
+    text-align:center;
+    overflow:hidden;
+}
+
+@keyframes bgMove{
+    from{background-position:0% 50%;}
+    to{background-position:100% 50%;}
+}
+
+.container{
+    padding:30px;
+    position:relative;
+    z-index:10;
+}
+
+h1{
+    font-size:3rem;
+    margin-bottom:20px;
+}
+
+button{
+    padding:15px 25px;
+    margin:10px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:1rem;
+    transition:.3s;
+}
+
+button:hover{
+    transform:scale(1.1);
+}
+
+.card{
+    background:rgba(255,255,255,.15);
+    backdrop-filter:blur(10px);
+    padding:20px;
+    border-radius:15px;
+    margin:20px auto;
+    max-width:700px;
+}
+
+#particles div{
+    position:absolute;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    pointer-events:none;
+    animation:fly 2s linear forwards;
+}
+
+@keyframes fly{
+    to{
+        transform:translateY(-200px) rotate(360deg);
+        opacity:0;
+    }
+}
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<div class="container">
+<h1>🎉 Ultimate Spaß Website 🎉</h1>
+
+<div class="card">
+<h2>Klick-Challenge</h2>
+<p>Klicks: <span id="count">0</span></p>
+<p>Highscore: <span id="highscore">0</span></p>
+<button onclick="addClick()">Klick Mich!</button>
+</div>
+
+<div class="card">
+<h2>Zufälliger Witz</h2>
+<p id="joke">Drücke den Button!</p>
+<button onclick="newJoke()">😂 Witz anzeigen</button>
+</div>
+
+<div class="card">
+<h2>Glücksrad</h2>
+<p id="wheelResult">Bereit?</p>
+<button onclick="spinWheel()">🎡 Drehen</button>
+</div>
+
+<div class="card">
+<h2>Farbchaos</h2>
+<button onclick="randomColor()">🌈 Zufällige Farbe</button>
+</div>
+
+<div class="card">
+<h2>Party Modus</h2>
+<button onclick="partyMode()">🎵 PARTY!</button>
+</div>
+
+</div>
+
+<script>
+let count = 0;
+let highscore = localStorage.getItem("highscore") || 0;
+
+document.getElementById("highscore").textContent = highscore;
+
+function addClick(){
+    count++;
+    document.getElementById("count").textContent = count;
+
+    if(count > highscore){
+        highscore = count;
+        localStorage.setItem("highscore", highscore);
+        document.getElementById("highscore").textContent = highscore;
+    }
+
+    createParticles();
+
+    beep(500,100);
+}
+
+const jokes = [
+"Warum können Geister so schlecht lügen? Weil man durch sie hindurchsieht.",
+"Treffen sich zwei Jäger. Beide tot.",
+"Was macht ein Pirat am Computer? Er drückt die Enter-Taste.",
+"Warum nehmen Skelette nicht am Kampf teil? Sie haben nicht den Mumm dazu.",
+"Ich habe einen Witz über Baustellen. Aber der ist noch nicht fertig."
+];
+
+function newJoke(){
+    const joke = jokes[Math.floor(Math.random()*jokes.length)];
+    document.getElementById("joke").textContent = joke;
+}
+
+function spinWheel(){
+    const rewards = [
+        "🍕 Gratis Pizza",
+        "💰 1 Million Fantasie-Euro",
+        "🦄 Ein Einhorn",
+        "🚀 Flug zum Mars",
+        "🍪 Ein Keks",
+        "👑 König des Internets"
+    ];
+
+    const result = rewards[Math.floor(Math.random()*rewards.length)];
+    document.getElementById("wheelResult").textContent = result;
+}
+
+function randomColor(){
+    document.body.style.background =
+    `rgb(${rand()},${rand()},${rand()})`;
+}
+
+function rand(){
+    return Math.floor(Math.random()*255);
+}
+
+function createParticles(){
+    for(let i=0;i<15;i++){
+        let p = document.createElement("div");
+
+        p.style.left = Math.random()*window.innerWidth+"px";
+        p.style.top = Math.random()*window.innerHeight+"px";
+        p.style.background =
+        `rgb(${rand()},${rand()},${rand()})`;
+
+        document.getElementById("particles").appendChild(p);
+
+        setTimeout(()=>p.remove(),2000);
+    }
+}
+
+function partyMode(){
+
+    let interval = setInterval(()=>{
+        document.body.style.background =
+        `rgb(${rand()},${rand()},${rand()})`;
+        beep(200+Math.random()*800,100);
+    },150);
+
+    setTimeout(()=>{
+        clearInterval(interval);
+    },5000);
+}
+
+function beep(freq,duration){
+    const audioCtx =
+      new(window.AudioContext||window.webkitAudioContext)();
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.frequency.value = freq;
+    osc.type = "sine";
+
+    osc.start();
+
+    gain.gain.setValueAtTime(0.1,audioCtx.currentTime);
+
+    osc.stop(audioCtx.currentTime + duration/1000);
+}
+</script>
+
+</body>
+</html>
